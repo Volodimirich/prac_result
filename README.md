@@ -6,3 +6,5 @@
 Scroll_Bar + Save_as button
 ***
 Красивые ошибки
+***
+Undo and Redo buttons
