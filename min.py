@@ -10,7 +10,7 @@ class Error(Exception):
 
 
 def click_dir():
-    window.filename = filedialog.askopenfilename(initialdir = "/",title = "Select file")
+    window.filename = filedialog.askopenfilename(initialdir = "~",title = "Select file")
     lb.configure(text=str(window.filename))
 
 
@@ -31,6 +31,18 @@ def click_save():
         window.filename == ""
         messagebox.showerror("Houston we have a problem",er)
 
+def click_undo():
+    try:
+        txt.edit_undo()
+    except Exception as er:
+        messagebox.showerror("Houston we have a problem",er)
+
+def click_redo():
+    try:
+        txt.edit_redo()
+    except Exception as er:
+        messagebox.showerror("Houston we have a problem",er)
+        
 def click_save_as():
     try:
         name = filedialog.asksaveasfilename(initialdir = "/",title = "Select file")
@@ -58,23 +70,30 @@ def text_start():
         window.filename == ""
         messagebox.showerror("Houston we have a problem",er)
 
+
 window = Tk()
 window.title("Welcome to the xxd")
 window.grid_columnconfigure(0, weight=1)
+window.grid_columnconfigure(1, weight=1)
+window.grid_columnconfigure(2, weight=1)
+window.grid_columnconfigure(3, weight=1)
+window.grid_columnconfigure(4, weight=1)
+window.grid_columnconfigure(5, weight=1)
 window.grid_rowconfigure(0,weight=1)
 window.filename=""
-#window.geometry("800x600")
 
-Label(text="Выбранный файл:").grid(row=0, column=0,padx = 10, pady = 10,sticky = W+N+S)
+Label(text="Файл:").grid(row=0, column=0,padx = 10, pady = 10,sticky = W+N+S)
 lb = Label(window, text=".", font=("Arial Bold", 10))
-lb.grid(row=0, column=1,sticky = N+S)
+lb.grid(row=0, column=4,sticky = N+S)
 
-txt = ScrolledText(width=70, height=10)
-txt.grid(columnspan=4,padx=10,pady=10)
+txt = ScrolledText(width=70, height=10,undo=True)
+txt.grid(columnspan=6,padx=10,pady=10)
 
-Button(text = "Open",command = click_dir).grid(row = 2, column = 3,sticky = E+S,padx = 10,pady = 10)
-Button(text = "Start",command = text_start).grid(row=2,column=2,sticky = E+W+S,padx = 10,pady = 10)
-Button(text = "Save As",command = click_save_as).grid(row=2,column=1,sticky = E+W+S,padx = 10,pady = 10)
-Button(text = "Save",command = click_save).grid(row = 2, column = 0,sticky = W+S,padx = 10,pady = 10)
+Button(text = "Open",command = click_dir).grid(row = 2, column = 5,padx = 10,pady = 10)
+Button(text = "Start",command = text_start).grid(row=2,column=4,padx = 10,pady = 10)
+Button(text = "Redo",command = click_redo).grid(row=2,column=3,padx = 10,pady = 10)
+Button(text = "Undo",command = click_undo).grid(row = 2, column = 2,padx = 10,pady = 10)
+Button(text = "Save As",command = click_save_as).grid(row=2,column=1,padx = 10,pady = 10)
+Button(text = "Save",command = click_save).grid(row = 2, column = 0,padx = 10,pady = 10)
 
 window.mainloop()
