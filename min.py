@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
-from tkinter import messagebox 
+from tkinter import messagebox
+from tkinter.scrolledtext import ScrolledText
 import subprocess
 
 class Error(Exception):
@@ -21,7 +22,8 @@ def click_save():
         file_copy.write(txt.get("@0,0", END).encode("utf-8"))
         proc = subprocess.run(["xxd", "-r", window.filename + ".tmp"], stdout = subprocess.PIPE)
         result = proc.stdout.decode("utf-8")
-        file = open(window.filename, "w").write(result)
+        file = open(window.filename, "w")
+        file.write(result)
         file_copy.close()
         file.close()
         subprocess.run(["rm", window.filename + ".tmp"])
@@ -29,6 +31,21 @@ def click_save():
         window.filename == ""
         messagebox.showerror("Houston we have a problem",er)
 
+def click_save_as():
+    try:
+        name = filedialog.asksaveasfilename(initialdir = "/",title = "Select file")
+        file_copy = open(name + ".tmp", "wb")
+        file_copy.write(txt.get("@0,0", END).encode("utf-8"))
+        proc = subprocess.run(["xxd", "-r", name + ".tmp"], stdout = subprocess.PIPE)
+        result = proc.stdout.decode("utf-8")
+        file = open(name, "w")
+        file.write(result)
+        file_copy.close()
+        file.close()
+        subprocess.run(["rm", name + ".tmp"])
+    except Exception as er:
+        messagebox.showerror("Houston we have a problem",er)
+        
 def text_start():
     try:
         if (window.filename == ""):
@@ -52,11 +69,12 @@ Label(text="Выбранный файл:").grid(row=0, column=0,padx = 10, pady 
 lb = Label(window, text=".", font=("Arial Bold", 10))
 lb.grid(row=0, column=1,sticky = N+S)
 
-txt = Text(width=70, height=10)
-txt.grid(columnspan=3,padx=10,pady=10)
+txt = ScrolledText(width=70, height=10)
+txt.grid(columnspan=4,padx=10,pady=10)
 
-Button(text = "Open",command = click_dir).grid(row = 2, column = 2,sticky = E+S,padx = 10,pady = 10)
-Button(text = "Start",command = text_start).grid(row=2,column=1,sticky = E+W+S,padx = 10,pady = 10)
+Button(text = "Open",command = click_dir).grid(row = 2, column = 3,sticky = E+S,padx = 10,pady = 10)
+Button(text = "Start",command = text_start).grid(row=2,column=2,sticky = E+W+S,padx = 10,pady = 10)
+Button(text = "Save As",command = click_save_as).grid(row=2,column=1,sticky = E+W+S,padx = 10,pady = 10)
 Button(text = "Save",command = click_save).grid(row = 2, column = 0,sticky = W+S,padx = 10,pady = 10)
 
 window.mainloop()
