@@ -1,31 +1,45 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox 
 import subprocess
+
+class Error(Exception):
+    def __init__(self, text):
+        self.txt = text
 
 
 def click_dir():
     window.filename = filedialog.askopenfilename(initialdir = "/",title = "Select file")
     lb.configure(text=str(window.filename))
 
-def file_open():
-    return open(window.filename,'wr')
 
 def click_save():
-    file_copy = open(window.filename + ".tmp", "wb")
-    file_copy.write(txt.get("@0,0", END).encode("utf-8"))
-    proc = subprocess.run(["xxd", "-r", window.filename + ".tmp"], stdout = subprocess.PIPE)
-    result = proc.stdout.decode("utf-8")
-    file = open(window.filename, "w").write(result)
-    file_copy.close()
-    file.close()
-    subprocess.run(["rm", window.filename + ".tmp"])
+    try:
+        if (window.filename == ""):
+            raise Error("You must select a file before saving it")
+        file_copy = open(window.filename + ".tmp", "wb")
+        file_copy.write(txt.get("@0,0", END).encode("utf-8"))
+        proc = subprocess.run(["xxd", "-r", window.filename + ".tmp"], stdout = subprocess.PIPE)
+        result = proc.stdout.decode("utf-8")
+        file = open(window.filename, "w").write(result)
+        file_copy.close()
+        file.close()
+        subprocess.run(["rm", window.filename + ".tmp"])
+    except Exception as er:
+        window.filename == ""
+        messagebox.showerror("Houston we have a problem",er)
 
 def text_start():
-    txt.delete('1.0', END)
-    proc = subprocess.run(["xxd", window.filename ], stdout=subprocess.PIPE)
-    result = proc.stdout.decode("utf-8")
-    txt.insert(END, result)
-
+    try:
+        if (window.filename == ""):
+            raise Error("Before starting, you must select a file")
+        txt.delete('1.0', END)
+        proc = subprocess.run(["xxd", window.filename ], stdout=subprocess.PIPE)
+        result = proc.stdout.decode("utf-8")
+        txt.insert(END, result)
+    except Exception as er:
+        window.filename == ""
+        messagebox.showerror("Houston we have a problem",er)
 
 window = Tk()
 window.title("Welcome to the xxd")
